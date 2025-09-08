@@ -1,0 +1,242 @@
+# Instrucciones para probar los servicios de la Tienda
+
+## Nombres de los integrantes
+- Nicolas Acosta
+- Angel Torres
+- Sebastian Niño
+
+## Cómo probar los servicios
+
+### 1. Iniciar los servidores
+Ejecuta los siguientes comandos en cada servicio:
+
+Para el servicio de usuarios:
+```
+cd users-service
+npm run dev
+```
+El servidor de usuarios escuchará en `http://localhost:3000`.
+
+Para el servicio de productos:
+```
+cd products-service
+npm run dev
+```
+El servidor de productos escuchará en `http://localhost:3001`.
+
+---
+
+## USERS SERVICE (Puerto 3000)
+
+### Traer todos los usuarios
+- **Método:** GET
+- **URL:** `/users/getAll`
+- **Ejemplo:**
+```
+curl http://localhost:3000/users/getAll
+```
+- **Respuesta esperada:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Juan",
+    "lastName": "Pérez",
+    "password": "1234"
+  },
+  {
+    "id": 2,
+    "name": "María",
+    "lastName": "Gómez",
+    "password": "abcd"
+  }
+]
+```
+
+### Traer usuario por id
+- **Método:** GET
+- **URL:** `/users/getById/:id`
+- **Ejemplo:**
+```
+curl http://localhost:3000/users/getById/1
+```
+- **Respuesta esperada:**
+```json
+{
+  "id": 1,
+  "name": "Juan",
+  "lastName": "Pérez",
+  "password": "1234"
+}
+```
+
+### Crear usuario
+- **Método:** POST
+- **URL:** `/users/createUser`
+- **Body (JSON):**
+```
+{
+  "name": "Pedro",
+  "lastName": "Ramírez",
+  "password": "pass123"
+}
+```
+- **Ejemplo:**
+```
+curl -X POST http://localhost:3000/users/createUser -H "Content-Type: application/json" -d '{"name":"Pedro","lastName":"Ramírez","password":"pass123"}'
+```
+- **Respuesta esperada:**
+```json
+{
+  "id": 3,
+  "name": "Pedro",
+  "lastName": "Ramírez",
+  "password": "pass123"
+}
+```
+
+### Validar usuario
+- **Método:** POST
+- **URL:** `/users/validateUser`
+- **Body (JSON):**
+```
+{
+  "name": "Juan",
+  "password": "1234"
+}
+```
+- **Ejemplo:**
+```
+curl -X POST http://localhost:3000/users/validateUser -H "Content-Type: application/json" -d '{"name":"Juan","password":"1234"}'
+```
+- **Respuesta esperada:**
+```json
+{
+  "valid": true
+}
+```
+
+### Eliminar usuario
+- **Método:** DELETE
+- **URL:** `/users/deleteUser/:id`
+- **Ejemplo:**
+```
+curl -X DELETE http://localhost:3000/users/deleteUser/1
+```
+- **Respuesta esperada:**
+```
+Sin contenido (status 204)
+```
+
+---
+
+## PRODUCTS SERVICE (Puerto 3001)
+
+### Crear producto
+- **Método:** POST
+- **URL:** `/products/createProducts`
+- **Body (JSON):**
+```
+{
+  "name": "Laptop",
+  "price": 1500,
+  "stock": 10,
+  "categoryId": 1
+}
+```
+- **Ejemplo:**
+```
+curl -X POST http://localhost:3001/products/createProducts -H "Content-Type: application/json" -d '{"name":"Laptop","price":1500,"stock":10,"categoryId":1}'
+```
+- **Respuesta esperada:**
+```json
+{
+  "id": 1,
+  "name": "Laptop",
+  "price": 1500,
+  "stock": 10,
+  "categoryId": 1
+}
+```
+
+### Actualizar producto
+- **Método:** PUT
+- **URL:** `/products/updateProducts/:id`
+- **Body (JSON):**
+```
+{
+  "price": 1200,
+  "stock": 8
+}
+```
+- **Ejemplo:**
+```
+curl -X PUT http://localhost:3001/products/updateProducts/1 -H "Content-Type: application/json" -d '{"price":1200,"stock":8}'
+```
+- **Respuesta esperada:**
+```json
+{
+  "id": 1,
+  "name": "Laptop",
+  "price": 1200,
+  "stock": 8,
+  "categoryId": 1
+}
+```
+
+### Traer todos los productos y su categoría
+- **Método:** GET
+- **URL:** `/products/getAllProducts`
+- **Ejemplo:**
+```
+curl http://localhost:3001/products/getAllProducts
+```
+- **Respuesta esperada:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Laptop",
+    "price": 1200,
+    "stock": 8,
+    "category": {
+      "id": 1,
+      "name": "Electrónica"
+    }
+  }
+]
+```
+
+### Eliminar producto
+- **Método:** DELETE
+- **URL:** `/products/deleteProducts/:id`
+- **Ejemplo:**
+```
+curl -X DELETE http://localhost:3001/products/deleteProducts/1
+```
+- **Respuesta esperada:**
+```
+Sin contenido (status 204)
+```
+
+---
+
+## Notas sobre la arquitectura
+- El proyecto está dividido en dos microservicios independientes:
+  1. Users Service (Arquitectura por capas)
+     - Controllers
+     - Services
+     - Repositories
+     - Models
+     - Routers
+
+  2. Products Service (Arquitectura hexagonal)
+     - Domain (entidades, puertos)
+     - Application (casos de uso)
+     - Infrastructure (adaptadores)
+
+- Cada servicio tiene su propia base de datos mock
+- La comunicación entre servicios se realiza a través de HTTP
+- El control de errores está implementado en ambos servicios
+
+---
