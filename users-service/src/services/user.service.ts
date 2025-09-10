@@ -1,7 +1,9 @@
-import { UserRepository } from "@/repositories/user.sequelize.repo";
-import { CreateUserDto } from "@/models/dtos/user.dto";
+import { UserRepository } from "@/repositories/user.database.repo";
+import { CreateUserDto } from "@/models/dtos/create-user.dto";
 import { ValidateUserDto } from "@/models/dtos/validate-user.dto";
 import { User } from "@/models/user.model";
+import { IncompleteCredentialsError, ValidationError } from "@/exceptions/validation.errors";
+import { NotFoundError } from "@/exceptions/domain.errors";
 
 export class UserService {
   private userRepository: UserRepository;
@@ -11,9 +13,12 @@ export class UserService {
   }
 
   private validateBusinessRules(data: { name?: string; lastName?: string; password?: string }) {
-    if (!data.name?.trim()) throw new Error("Nombre requerido");
-    if (!data.lastName?.trim()) throw new Error("Apellido requerido");
-    if (!data.password?.trim()) throw new Error("Password requerido");
+    if (!data.name?.trim()) 
+      throw new ValidationError("Name is required", "REQUIRED_NAME");
+    if (!data.lastName?.trim()) 
+      throw new ValidationError("Last name is required", "REQUIRED_LAST_NAME");
+    if (!data.password?.trim()) 
+      throw new ValidationError("Password is required", "REQUIRED_PASSWORD");
   }
 
   async create(dto: CreateUserDto): Promise<User> {
@@ -27,19 +32,21 @@ export class UserService {
 
   async getById(id: number): Promise<User> {
     const user = await this.userRepository.getById(id);
-    if (!user) throw new Error(`Usuario con id ${id} no encontrado`);
+    if (!user) 
+      throw new NotFoundError(`Usuario con id ${id} no encontrado`, "USER_NOT_FOUND");
     return user;
   }
 
   async validate(dto: ValidateUserDto): Promise<boolean> {
     if (!dto.name?.trim() || !dto.password?.trim())
-      throw new Error("Credenciales incompletas");
+      throw new IncompleteCredentialsError();
     return await this.userRepository.validate(dto.name, dto.password);
   }
 
   async delete(id: number): Promise<void> {
     const ok = await this.userRepository.delete(id);
-    if (!ok) throw new Error(`Usuario con id ${id} no encontrado`);
+    if (!ok) 
+      throw new NotFoundError(`Usuario con id ${id} no encontrado`, "USER_NOT_FOUND");
   }
   
 };
