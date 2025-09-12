@@ -1,9 +1,11 @@
-import { UserRepository } from "@/repositories/user.database.repo";
+import { UserRepository } from "@/repositories/user.in-memory.repo";
 import { CreateUserDto } from "@/models/dtos/create-user.dto";
 import { ValidateUserDto } from "@/models/dtos/validate-user.dto";
+import { LoginUserDto } from "@/models/dtos/login-user.dto";
 import { User } from "@/models/user.model";
 import { IncompleteCredentialsError, ValidationError } from "@/exceptions/validation.errors";
 import { NotFoundError } from "@/exceptions/domain.errors";
+import { encrypt, decrypt } from "../utils/encrypt.service";
 
 export class UserService {
   private userRepository: UserRepository;
@@ -41,6 +43,16 @@ export class UserService {
     if (!dto.name?.trim() || !dto.password?.trim())
       throw new IncompleteCredentialsError();
     return await this.userRepository.validate(dto.name, dto.password);
+  }
+
+  async login(dto: LoginUserDto): Promise<string> {
+    if (!dto.email?.trim() || !dto.password?.trim())
+      throw new IncompleteCredentialsError();
+    const password = await this.userRepository.login(dto.email, dto.password);
+    if(!password){
+      throw new IncompleteCredentialsError();
+    }
+    return encrypt(password);
   }
 
   async delete(id: number): Promise<void> {

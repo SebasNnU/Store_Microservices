@@ -18,7 +18,7 @@ export class UserController {
   };
 
   getAll = async (req: Request, res: Response) => {
-    res.json(await this.userService.getAll());
+    res.json(await this.userService.getAll())
   };
 
   getById = async (req: Request, res: Response) => {
@@ -33,6 +33,15 @@ export class UserController {
   validate = async (req: Request, res: Response) => {
     try {
       const result = await this.userService.validate(req.body);
+      res.json(result);
+    } catch (e: any) {
+      res.status(400).json({ error: e.message });
+    }
+  };
+
+  login = async (req: Request, res: Response) => {
+    try {
+      const result = await this.userService.login(req.body);
       res.json(result);
     } catch (e: any) {
       res.status(400).json({ error: e.message });

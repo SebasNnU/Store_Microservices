@@ -15,3 +15,9 @@ export class IncompleteCredentialsError extends ValidationError {
     super("Credenciales incompletas", "CREDENTIALS_REQUIRED");
   }
 }
+
+export class IncorrectCredentialsError extends ValidationError {
+  constructor() {
+    super("Credenciales incorrectas", "CREDENTIALS_ERROR");
+  }
+}

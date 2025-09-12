@@ -10,6 +10,7 @@ export class UserEntity
     declare id: number;
     declare name: string;
     declare lastName: string;
+    declare email: string;
     declare password: string;
 }
 
@@ -24,9 +25,14 @@ UserEntity.init(
         name: {
             type: DataTypes.STRING(100),
             allowNull: false,
-            unique: true
+            unique: false
         },
         lastName: {
+            type: DataTypes.STRING(100),
+            allowNull: true,
+            unique: false
+        },
+        email: {
             type: DataTypes.STRING(100),
             allowNull: false,
             unique: true
