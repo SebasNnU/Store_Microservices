@@ -1,16 +1,22 @@
-import { decrypt } from "@/utils/encrypt.service";
+import { Request, Response, NextFunction } from "express";
+import { decrypt } from "@/utils/cryptoUtils";
 
-export function authMiddleware(req: any, res: any, next: any) {
-    const authHeader: string = req.headers['authorization'];
+export function authMiddleware(req: Request, res: Response, next: NextFunction) {
+    const authHeader = req.headers['authorization'];
+    console.log(authHeader);
 
     if (!authHeader) {
-        return res.status(401).json({ message: 'No hay token' });
+        return res.status(401).json({ message: 'Falta el header authorization' });
     }
-    
-    const token = authHeader;
-    console.log(token);
-    if (!token || !decrypt(token)) {
-        return res.status(401).json({ message: 'Token Invalido' });
+
+    const [scheme, token] = authHeader.split(' ');
+
+    if (scheme !== 'Bearer' || !token) {
+        return res.status(401).json({ message: 'Formato de token invalido' });
+    }
+
+    if (!decrypt(token)) {
+        return res.status(401).json({ message: 'Token Invalido o expirado' });
     }
 
     next();

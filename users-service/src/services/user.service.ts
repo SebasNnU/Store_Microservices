@@ -3,9 +3,9 @@ import { CreateUserDto } from "@/models/dtos/create-user.dto";
 import { ValidateUserDto } from "@/models/dtos/validate-user.dto";
 import { LoginUserDto } from "@/models/dtos/login-user.dto";
 import { User } from "@/models/user.model";
-import { IncompleteCredentialsError, ValidationError } from "@/exceptions/validation.errors";
+import { IncompleteCredentialsError, IncorrectCredentialsError, ValidationError } from "@/exceptions/validation.errors";
 import { NotFoundError } from "@/exceptions/domain.errors";
-import { encrypt, decrypt } from "../utils/encrypt.service";
+import { encrypt} from "../utils/cryptoUtils";
 
 export class UserService {
   private userRepository: UserRepository;
@@ -48,11 +48,11 @@ export class UserService {
   async login(dto: LoginUserDto): Promise<string> {
     if (!dto.email?.trim() || !dto.password?.trim())
       throw new IncompleteCredentialsError();
-    const password = await this.userRepository.login(dto.email, dto.password);
-    if(!password){
-      throw new IncompleteCredentialsError();
+    const email = await this.userRepository.login(dto.email, dto.password);
+    if(!email){
+      throw new IncorrectCredentialsError();
     }
-    return encrypt(password);
+    return encrypt(email);
   }
 
   async delete(id: number): Promise<void> {

@@ -28,7 +28,7 @@ export class UserRepository {
 
   async login(email: string, password: string): Promise<string|undefined> {
     if(users.some(u => u.email === email && u.password === password)){
-      return password;
+      return email;
     }
     return;
   }
