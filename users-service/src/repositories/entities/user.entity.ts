@@ -24,13 +24,11 @@ UserEntity.init(
         },
         name: {
             type: DataTypes.STRING(100),
-            allowNull: false,
-            unique: false
+            allowNull: false
         },
         lastName: {
             type: DataTypes.STRING(100),
-            allowNull: true,
-            unique: false
+            allowNull: true
         },
         email: {
             type: DataTypes.STRING(100),

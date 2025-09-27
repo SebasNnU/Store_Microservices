@@ -1,34 +1,24 @@
-import { DataTypes, Model, Optional } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
+import { Product } from "@/domain/models/product.model";
+import { CreateProductDto } from "@/domain/models/dtos/create-product.dto";
+import { CategoryEntity } from "./category.seq-entity";
 
-// 1. Atributos de la tabla
-export interface ProductAttributes {
-  id: number;
-  name: string;
-  price: number;
-  stock: number;
-  state: string;
-  categoryId: number;
-}
-
-// 2. Atributos requeridos para crear un Product (id es autoincremental)
-export interface ProductCreationAttributes
-  extends Optional<ProductAttributes, "id"> { }
-
-// 3. Clase del modelo
-export class ProductSequelize
-  extends Model<ProductAttributes, ProductCreationAttributes>
-  implements ProductAttributes {
+// Entidad Product
+export class ProductEntity
+  extends Model<Product, CreateProductDto>
+  implements Product {
   declare id: number;
   declare name: string;
   declare price: number;
   declare stock: number;
   declare state: string;
   declare categoryId: number;
+  declare category?: CategoryEntity;
 }
 
-// 4. Inicialización del modelo
-ProductSequelize.init(
+// Inicialización de la entidad Product
+ProductEntity.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -38,6 +28,7 @@ ProductSequelize.init(
     name: {
       type: DataTypes.STRING(255),
       allowNull: false,
+      unique: true,
     },
     price: {
       type: DataTypes.DECIMAL(10, 2),
@@ -63,3 +54,15 @@ ProductSequelize.init(
     timestamps: false,
   }
 );
+
+// Relación muchos a uno entre Product y Category
+ProductEntity.belongsTo(CategoryEntity, {
+  foreignKey: 'categoryId',
+  as: 'category'
+});
+// Relación uno a muchos entre Category y Product
+CategoryEntity.hasMany(ProductEntity, {
+  sourceKey: 'id',
+  foreignKey: 'categoryId',
+  as: 'products'
+});

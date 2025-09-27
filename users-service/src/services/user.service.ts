@@ -1,4 +1,4 @@
-import { UserRepository } from "@/repositories/user.in-memory.repo";
+import { UserRepository } from "@/repositories/user.sequelize.repo";
 import { CreateUserDto } from "@/models/dtos/create-user.dto";
 import { ValidateUserDto } from "@/models/dtos/validate-user.dto";
 import { LoginUserDto } from "@/models/dtos/login-user.dto";

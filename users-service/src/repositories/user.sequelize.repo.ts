@@ -28,4 +28,9 @@ export class UserRepository {
     return !!user;
   }
 
+  async login(email: string, password: string): Promise<string | undefined> {
+    const user = await UserEntity.findOne({ where: { email, password } });
+    return user ? user.email : undefined;
+  }
+
 };
