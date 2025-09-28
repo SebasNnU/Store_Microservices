@@ -1,242 +1,180 @@
-# Instrucciones para probar los servicios de la Tienda
+# GUÍA DE INSTALACIÓN Y USO DE APLICACIÓN TIENDA
 
 ## Nombres de los integrantes
 - Nicolas Acosta
 - Angel Torres
 - Sebastian Niño
 
-## Cómo probar los servicios
+## ¿Qué usamos?
 
-### 1. Iniciar los servidores
-Ejecuta los siguientes comandos en cada servicio:
+- Node.js
+- npm
+- Docker y Docker Compose (para la base de datos MySQL)
+- curl o Postman para pruebas HTTP
 
-Para el servicio de usuarios:
+ACLARACIÓN: "Cada microservicio tiene una seed que monta algunos datos quemados
+para realizar pruebas rapidas (se ejecutan en el archivo server.ts respectivo)"
+
+---
+
+## 1. Levantar la base de datos MySQL con Docker
+
+```
+docker-compose up -d
+```
+Esto creará la base de datos `store_db` y las tablas necesarias.
+
+---
+
+## 2. Instalar dependencias en cada microservicio
+
+### Users Service
+
+```
+cd users-service
+npm install
+```
+
+### Products Service
+
+```
+cd ../products-service
+npm install
+```
+
+### Orders Service
+
+```
+cd ../orders-service
+npm install
+```
+
+---
+
+## 3. Iniciar los microservicios
+
+Abre una terminal para cada servicio y ejecuta:
+
+### Users Service (puerto 3000)
+
 ```
 cd users-service
 npm run dev
 ```
-El servidor de usuarios escuchará en `http://localhost:3000`.
 
-Para el servicio de productos:
+### Products Service (puerto 3001)
+
 ```
 cd products-service
 npm run dev
 ```
-El servidor de productos escuchará en `http://localhost:3001`.
 
----
+### Orders Service (puerto 3002)
 
-## USERS SERVICE (Puerto 3000)
-
-### Traer todos los usuarios
-- **Método:** GET
-- **URL:** `/users/getAll`
-- **Ejemplo:**
 ```
-curl http://localhost:3000/users/getAll
-```
-- **Respuesta esperada:**
-```json
-[
-  {
-    "id": 1,
-    "name": "Juan",
-    "lastName": "Pérez",
-    "password": "1234"
-  },
-  {
-    "id": 2,
-    "name": "María",
-    "lastName": "Gómez",
-    "password": "abcd"
-  }
-]
-```
-
-### Traer usuario por id
-- **Método:** GET
-- **URL:** `/users/getById/:id`
-- **Ejemplo:**
-```
-curl http://localhost:3000/users/getById/1
-```
-- **Respuesta esperada:**
-```json
-{
-  "id": 1,
-  "name": "Juan",
-  "lastName": "Pérez",
-  "password": "1234"
-}
-```
-
-### Crear usuario
-- **Método:** POST
-- **URL:** `/users/createUser`
-- **Body (JSON):**
-```
-{
-  "name": "Pedro",
-  "lastName": "Ramírez",
-  "password": "pass123"
-}
-```
-- **Ejemplo:**
-```
-curl -X POST http://localhost:3000/users/createUser -H "Content-Type: application/json" -d '{"name":"Pedro","lastName":"Ramírez","password":"pass123"}'
-```
-- **Respuesta esperada:**
-```json
-{
-  "id": 3,
-  "name": "Pedro",
-  "lastName": "Ramírez",
-  "password": "pass123"
-}
-```
-
-### Validar usuario
-- **Método:** POST
-- **URL:** `/users/validateUser`
-- **Body (JSON):**
-```
-{
-  "name": "Juan",
-  "password": "1234"
-}
-```
-- **Ejemplo:**
-```
-curl -X POST http://localhost:3000/users/validateUser -H "Content-Type: application/json" -d '{"name":"Juan","password":"1234"}'
-```
-- **Respuesta esperada:**
-```json
-{
-  "valid": true
-}
-```
-
-### Eliminar usuario
-- **Método:** DELETE
-- **URL:** `/users/deleteUser/:id`
-- **Ejemplo:**
-```
-curl -X DELETE http://localhost:3000/users/deleteUser/1
-```
-- **Respuesta esperada:**
-```
-Sin contenido (status 204)
+cd orders-service
+npm run dev
 ```
 
 ---
 
-## PRODUCTS SERVICE (Puerto 3001)
+## 4. Probar los endpoints
 
-### Crear producto
-- **Método:** POST
-- **URL:** `/products/createProducts`
-- **Body (JSON):**
-```
-{
-  "name": "Laptop",
-  "price": 1500,
-  "stock": 10,
-  "categoryId": 1
-}
-```
-- **Ejemplo:**
-```
-curl -X POST http://localhost:3001/products/createProducts -H "Content-Type: application/json" -d '{"name":"Laptop","price":1500,"stock":10,"categoryId":1}'
-```
-- **Respuesta esperada:**
-```json
-{
-  "id": 1,
-  "name": "Laptop",
-  "price": 1500,
-  "stock": 10,
-  "categoryId": 1
-}
-```
+### USERS SERVICE (http://localhost:3000)
 
-### Actualizar producto
-- **Método:** PUT
-- **URL:** `/products/updateProducts/:id`
-- **Body (JSON):**
-```
-{
-  "price": 1200,
-  "stock": 8
-}
-```
-- **Ejemplo:**
-```
-curl -X PUT http://localhost:3001/products/updateProducts/1 -H "Content-Type: application/json" -d '{"price":1200,"stock":8}'
-```
-- **Respuesta esperada:**
-```json
-{
-  "id": 1,
-  "name": "Laptop",
-  "price": 1200,
-  "stock": 8,
-  "categoryId": 1
-}
-```
+- **Obtener todos los usuarios**
+  ```
+  curl http://localhost:3000/users/getAll
+  ```
 
-### Traer todos los productos y su categoría
-- **Método:** GET
-- **URL:** `/products/getAllProducts`
-- **Ejemplo:**
-```
-curl http://localhost:3001/products/getAllProducts
-```
-- **Respuesta esperada:**
-```json
-[
-  {
-    "id": 1,
-    "name": "Laptop",
-    "price": 1200,
-    "stock": 8,
-    "category": {
-      "id": 1,
-      "name": "Electrónica"
-    }
-  }
-]
-```
+- **Obtener usuario por ID**
+  ```
+  curl http://localhost:3000/users/getById/1
+  ```
 
-### Eliminar producto
-- **Método:** DELETE
-- **URL:** `/products/deleteProducts/:id`
-- **Ejemplo:**
-```
-curl -X DELETE http://localhost:3001/products/deleteProducts/1
-```
-- **Respuesta esperada:**
-```
-Sin contenido (status 204)
-```
+- **Crear usuario**
+  ```
+  curl -X POST http://localhost:3000/users/createUser -H "Content-Type: application/json" -d '{"name":"Pedro","lastName":"Ramírez","email":"pedro@email.com","password":"pass123"}'
+  ```
+
+- **Validar usuario**
+  ```
+  curl -X POST http://localhost:3000/users/validateUser -H "Content-Type: application/json" -d '{"name":"Juan","password":"1234"}'
+  ```
+
+- **Login usuario**
+  ```
+  curl -X POST http://localhost:3000/users/login -H "Content-Type: application/json" -d '{"email":"JuanPerez@gmail.com","password":"1234"}'
+  ```
+
+- **Eliminar usuario**
+  ```
+  curl -X DELETE http://localhost:3000/users/deleteUser/1
+  ```
 
 ---
 
-## Notas sobre la arquitectura
-- El proyecto está dividido en dos microservicios independientes:
-  1. Users Service (Arquitectura por capas)
-     - Controllers
-     - Services
-     - Repositories
-     - Models
-     - Routers
+### PRODUCTS SERVICE (http://localhost:3001)
 
-  2. Products Service (Arquitectura hexagonal)
-     - Domain (entidades, puertos)
-     - Application (casos de uso)
-     - Infrastructure (adaptadores)
+- **Crear producto**
+  ```
+  curl -X POST http://localhost:3001/products/createProduct -H "Content-Type: application/json" -d '{"name":"Laptop","price":1500,"stock":10,"state":"available","categoryId":1}'
+  ```
 
-- Cada servicio tiene su propia base de datos mock
-- La comunicación entre servicios se realiza a través de HTTP
-- El control de errores está implementado en ambos servicios
+- **Actualizar producto**
+  ```
+  curl -X PUT http://localhost:3001/products/updateProduct/1 -H "Content-Type: application/json" -d '{"price":1200,"stock":8}'
+  ```
+
+- **Obtener todos los productos y su categoría**
+  ```
+  curl http://localhost:3001/products/getAllProducts
+  ```
+
+- **Eliminar producto**
+  ```
+  curl -X DELETE http://localhost:3001/products/deleteProduct/1
+  ```
+
+---
+
+### ORDERS SERVICE (http://localhost:3002)
+
+- **Crear orden**
+  ```
+  curl -X POST http://localhost:3002/orders/orders -H "Content-Type: application/json" -d '{"userId":1,"total":150.0}'
+  ```
+
+- **Obtener todas las órdenes**
+  ```
+  curl http://localhost:3002/orders/getAllOrders
+  ```
+
+- **Obtener orden por ID**
+  ```
+  curl http://localhost:3002/orders/getOrderById/1
+  ```
+
+- **Obtener órdenes por usuario**
+  ```
+  curl http://localhost:3002/orders/getOrder/1
+  ```
+
+- **Obtener detalles de una orden**
+  ```
+  curl http://localhost:3002/orders/getDetailOrderById/1
+  ```
+
+- **Eliminar orden**
+  ```
+  curl -X DELETE http://localhost:3002/orders/deleteOrder/1
+  ```
+
+---
+
+## 5. Notas sobre la arquitectura
+
+- Cada microservicio es independiente sin embargo se conectan a través de una base de datos compartida.
+- La comunicación entre servicios se realiza vía HTTP (sin embargo aún no hay endpoints que lo hagan).
 
 ---
