@@ -1,9 +1,9 @@
 # GUÍA DE INSTALACIÓN Y USO DE APLICACIÓN TIENDA
 
 ## Nombres de los integrantes
-- Nicolas Acosta
-- Angel Torres
-- Sebastian Niño
+- Nicolas Santiago Acosta Parra
+- Sebastian Niño Niño
+- Angel David Torres Castellanos
 
 ## ¿Qué usamos?
 
