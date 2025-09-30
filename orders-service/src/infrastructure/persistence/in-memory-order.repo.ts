@@ -1,9 +1,11 @@
 import { IOrderRepository } from "@/domain/ports/out/order-repository.port";
-import { Order } from "@/domain/models/order.model";
 import { OrderNotFoundError } from "@/domain/exceptions/domain.exception";
+import { Order } from "@/domain/models/order.model";
+import { OrderDetails } from "@/domain/models/order-details.model";
 
 export class OrderRepository implements IOrderRepository {
     private orders: Order[] = [];
+    private orderDetails: OrderDetails[] = [];
     private currentId = 1;
 
     async create(order: Omit<Order, "id">): Promise<Order> {
@@ -26,10 +28,9 @@ export class OrderRepository implements IOrderRepository {
         return this.orders.filter(o => o.userId === userId);
     }
 
-    async getDetailsById(id: number): Promise<Order | null> {
-        const order = this.orders.find(o => o.id === id);
-        if (!order) throw new OrderNotFoundError(id);
-        return order;
+    async getDetailsById(id: number): Promise<OrderDetails | null> {
+        const details = this.orderDetails.find(d => d.id === id) || null;
+        return details;
     }
 
     async delete(id: number): Promise<boolean> {

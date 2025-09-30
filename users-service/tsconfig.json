@@ -15,9 +15,14 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
+    "esModuleInterop": true,
+    "rootDir": "src",
+    "outDir": "dist",
     "baseUrl": "src",
     "paths": {
       "@/*": ["*"]
-    }
-  }
+    },
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }
