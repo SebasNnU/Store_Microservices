@@ -1,14 +1,14 @@
 import { Sequelize } from "sequelize";
 
 export const sequelize = new Sequelize(
-    "store_db",      // BD_name
-    "admin",         // user en docker
-    "admin123",         // password en docker
+    process.env.DB_NAME || "store_db",
+    process.env.DB_USER || "admin",
+    process.env.DB_PASS || "admin123",
     {
-        host: "localhost",
+        host: process.env.DB_HOST || "localhost",
         dialect: 'mysql',
-        port: 3306,         // Puerto expuesto en docker-compose
-        logging: false,     // Desactiva logs de SQL en consola
+        port: Number(process.env.DB_PORT) || 3306,
+        logging: false, // NO Logs de SQL en consola
     });
 
 export async function connectDB() {

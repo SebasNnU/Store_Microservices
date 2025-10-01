@@ -1,0 +1,88 @@
+================================================
+Crear la RED:
+docker network create store-network
+================================================
+Levantar la BD MySQL
+docker run -d 
+  --name mysql_store_db 
+  --network store-network 
+  -e MYSQL_ROOT_PASSWORD=root123 
+  -e MYSQL_DATABASE=store_db 
+  -e MYSQL_USER=admin 
+  -e MYSQL_PASSWORD=admin123 
+  -p 3306:3306 
+  -v mysql_store_data_:/var/lib/mysql 
+  -v ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  mysql:8.0
+-----------
+docker run -d --name mysql_store_db --network store-network -e MYSQL_ROOT_PASSWORD=root123 -e MYSQL_DATABASE=store_db -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin123 -p 3306:3306 -v mysql_store_data_:/var/lib/mysql   -v ./init.sql:/docker-entrypoint-initdb.d/init.sql mysql:8.0
+
+-- Antes de crear las imagenes hacer npm run build
+
+MICROSERVICIO USERS
+================================================
+Dockerfile
+// La recete que le dice a Docker cómo construir la imagen
+================================================
+Contruir la imagen del servicio
+docker build -t users-service:latest .
+================================================
+Crear contenedor del microservicio USERS
+docker run -d \
+  --name users_service \
+  --network store-network \
+  -e DB_HOST=mysql_store_db \
+  -e DB_PORT=3306 \
+  -e DB_USER=admin \
+  -e DB_PASS=admin123 \
+  -e DB_NAME=store_db \
+  -e PORT=3101 \
+  -p 3101:3101 \
+  users-service:latest
+------------
+docker run -d --name users_service --network store-network -e DB_HOST=mysql_store_db -e DB_PORT=3306 -e DB_USER=admin -e DB_PASS=admin123 -e DB_NAME=store_db -e PORT=3101 -p 3101:3101 users-service:latest
+
+MICROSERVICIO PRODUCTS
+================================================
+Dockerfile
+// La recete que le dice a Docker cómo construir la imagen
+================================================
+Contruir la imagen del servicio
+docker build -t products-service:latest .
+================================================
+Crear contenedor del microservicio PRODUCTS
+docker run -d \
+  --name products_service \
+  --network store-network \
+  -e DB_HOST=mysql_store_db \
+  -e DB_PORT=3306 \
+  -e DB_USER=admin \
+  -e DB_PASS=admin123 \
+  -e DB_NAME=store_db \
+  -e PORT=3102 \
+  -p 3102:3102 \
+  products-service:latest
+------------
+docker run -d --name products_service --network store-network -e DB_HOST=mysql_store_db -e DB_PORT=3306 -e DB_USER=admin -e DB_PASS=admin123 -e DB_NAME=store_db -e PORT=3102 -p 3102:3102 products-service:latest
+
+MICROSERVICIO ORDERS
+================================================
+Dockerfile
+// La recete que le dice a Docker cómo construir la imagen
+================================================
+Contruir la imagen del servicio
+docker build -t orders-service:latest .
+================================================
+Crear contenedor del microservicio ORDERS
+docker run -d `
+  --name orders_service `
+  --network store-network `
+  -e DB_HOST=mysql_store_db `
+  -e DB_PORT=3306 `
+  -e DB_USER=admin `
+  -e DB_PASS=admin123 `
+  -e DB_NAME=store_db `
+  -e PORT=3103 `
+  -p 3103:3103 `
+  orders-service:latest
+------------
